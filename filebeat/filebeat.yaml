@@ -1,0 +1,21 @@
+---
+- hosts: filebeat
+  name: install filebeat to monitor syslogs
+  any_errors_fatal: true
+
+  tasks:
+  - name: install filebeat
+    yum:
+      name: filebeat
+      state: present
+
+  - name: create filebeat config
+    template:
+      src: templates/filebeat.yml
+      dest: /etc/filebeat/filebeat.yml
+
+  - name: start filebeat service
+    service:
+      name: filebeat
+      state: started
+      enabled: yes

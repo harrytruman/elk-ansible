@@ -1,0 +1,39 @@
+---
+- hosts: logstash
+  name: install and configure logstash
+  any_errors_fatal: true
+
+  tasks:
+  - name: install OpenJDK 1.8.0
+    yum:
+      name: java-1.8.0-openjdk
+      state: present
+
+  - name: install logstash
+    yum:
+      name: logstash
+      state: present
+
+  - name: place logstash processing template
+    template:
+      src: templates/logstash.json
+      dest: /etc/logstash/conf.d/logstash.json
+      force: yes
+
+  - name: set service listening address
+    lineinfile:
+      dest: /etc/logstash/logstash.yml
+      regexp: ^http.host
+      insertafter: "^# http.host" 
+      line: "http.host: {{ ansible_default_ipv4.address }}"
+
+  - name: start logstash service
+    service:
+      name: logstash
+      state: started
+      enabled: yes
+
+  - name: wait for service to begin listening
+    wait_for:
+      port: 5044
+      delay: 30

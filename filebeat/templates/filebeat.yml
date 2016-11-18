@@ -1,0 +1,13 @@
+filebeat.prospectors:
+- input_type: log
+  paths:
+    - /var/log/*.log
+    - /var/log/elasticsearch/*.log
+    - /var/log/logstash/*.log
+    - /var/log/filebeat/*
+    - /var/log/messages
+    - /var/log/secure
+output.logstash:
+  hosts: ["{{ ansible_default_ipv4.address }}:5044"]
+logging.to_files: true
+logging.files:

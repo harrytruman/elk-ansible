@@ -1,0 +1,57 @@
+---
+- hosts: elasticsearch
+  name: install and configure elasticsearch
+  any_errors_fatal: true
+
+  tasks:
+  - name: install OpenJDK 1.8.0
+    yum:
+      name: java-1.8.0-openjdk
+      state: present
+
+  - name: install elasticsearch
+    yum:
+      name: elasticsearch
+      state: present
+
+  - name: set elasticsearch server address
+    lineinfile:
+      dest: /etc/elasticsearch/elasticsearch.yml
+      regexp: #network.host
+      insertafter: "^#network.host"
+      line: "network.host: {{ ansible_default_ipv4.address }}"
+
+  - name: set jvm minimum memory to 50%
+    lineinfile:
+      dest: /etc/elasticsearch/jvm.options
+      regexp: '^(.*)Xms(\d+)g(.*)$'
+      line: '\1Xms{{ (ansible_memtotal_mb*0.5)|int|abs }}m\3'
+      backrefs: yes
+  
+  - name: set jvm maximum memory to 50%
+    lineinfile:
+      dest: /etc/elasticsearch/jvm.options
+      regexp: '^(.*)Xmx(\d+)g(.*)$'
+      line: '\1Xmx{{ (ansible_memtotal_mb*0.5)|int|abs }}m\3'
+      backrefs: yes
+
+  - name: set vm.max_map_count to 262144
+    sysctl:
+      name: vm.max_map_count
+      value: 262144
+      state: present
+
+  - name: start elasticsearch service
+    service:
+      name: elasticsearch
+      state: started
+      enabled: yes
+
+  - name: validate that elasticsearch is up and available
+    uri:
+      url: http://{{ ansible_default_ipv4.address }}:9200
+      status_code: 200
+    register: result
+    until: result.status == 200
+    retries: 60
+    delay: 1
