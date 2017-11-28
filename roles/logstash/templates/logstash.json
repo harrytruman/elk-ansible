@@ -1,0 +1,22 @@
+input {
+#  beats {
+#    port => 5044
+#  }
+  http {
+    port => 5055
+    tags => "tower"
+  }
+}
+
+filter {
+  json {
+    source => "message"
+    remove_field => [ "headers" ]
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => "{{ ansible_hostname}}:9200"
+  }
+}

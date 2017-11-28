@@ -1,0 +1,12 @@
+#elasticsearch_package: /tmp/elasticsearch-5.5.2.rpm
+#kibana_package: /tmp/kibana-5.5.2-x86_64.rpm
+#filebeat_package: /tmp/filebeat-5.5.2-x86_64.rpm
+#logstash_package: /tmp/logstash-5.5.2.rpm
+
+elastic_cluster_name: elk-ansible
+
+elk_packages:
+  - "{{ elasticsearch_package }}"
+  - "{{ kibana_package }}"
+  - "{{ filebeat_package }}"
+  - "{{ logstash_package }}"

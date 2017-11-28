@@ -7,8 +7,10 @@
   hosts: all
   gather_facts: true
 
-- include: pre.yaml
-- include: elasticsearch/elasticsearch.yaml
-- include: kibana/kibana.yaml
-- include: logstash/logstash.yaml
-- include: filebeat/filebeat.yaml
+  roles:
+    - role: pre
+    - role: elasticsearch
+    - role: kibana
+    - role: logstash
+#    - role: filebeat
+    - role: ssl

@@ -1,0 +1,20 @@
+- name: install filebeat
+  yum:
+    name: filebeat
+    state: present
+
+#- name: Install ELK Packages
+#  yum:
+#    name: "{{ filebeat_package }}"
+#    state: present
+
+- name: create filebeat config
+  template:
+    src: templates/filebeat.yml
+    dest: /etc/filebeat/filebeat.yml
+
+- name: start filebeat service
+  service:
+    name: filebeat
+    state: started
+    enabled: yes

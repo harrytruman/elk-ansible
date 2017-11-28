@@ -8,6 +8,6 @@ filebeat.prospectors:
     - /var/log/messages
     - /var/log/secure
 output.logstash:
-  hosts: ["{{ ansible_default_ipv4.address }}:5044"]
+  hosts: ["{{ ansible_hostname }}:5044"]
 logging.to_files: true
 logging.files:

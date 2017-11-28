@@ -1,0 +1,41 @@
+- name: install kibana
+  yum:
+    name: kibana
+    state: present
+
+#- name: Install Kibana Package
+#  yum:
+#    name: "{{ kibana_package }}"
+#    state: present
+
+- name: Allow Kibana user to bind to privileged ports
+  shell: |
+    setcap 'CAP_NET_BIND_SERVICE=+eip' /usr/share/kibana/node/bin/node
+
+- name: set kibana server address
+  lineinfile:
+    dest: /etc/kibana/kibana.yml
+    regexp: #server.name
+    insertafter: "^#server.host"
+    line: "server.host: \"{{ ansible_hostname }}\""
+
+- name: set kibana port to 443
+  lineinfile:
+    dest: /etc/kibana/kibana.yml
+    regexp: #server.port
+    insertafter: "^#server.host"
+    line: "server.port: 443"
+
+- name: set elasticsearch node address
+  lineinfile:
+    dest: /etc/kibana/kibana.yml
+    regexp: #elasticsearch.url
+    insertafter: "^#elasticsearch.url"
+    line: "elasticsearch.url: \"http://{{ ansible_hostname }}:9200\""
+
+- name: start kibana service
+  systemd:
+    name: kibana
+    state: started
+    enabled: yes
+    daemon_reload: yes

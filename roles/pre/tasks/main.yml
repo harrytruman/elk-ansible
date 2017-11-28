@@ -1,0 +1,22 @@
+- name: download and install elasticsearch GPG key
+  rpm_key:
+    state=present
+    key=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: create repo for elasticsearch 5.x packages
+  yum_repository:
+    name: elasticsearch
+    description: Elasticsearch repository for 5.x packages
+    baseurl: https://artifacts.elastic.co/packages/6.x/yum
+    gpgcheck: yes
+
+#- name: Copy ELK Packages
+#  copy:
+#    src: "{{ item }}"
+#    dest: /tmp/{{ item }}
+#    mode: 0644
+#  with_items:
+#    - elasticsearch-5.1.1.rpm
+#    - kibana-5.1.1-x86_64.rpm
+#    - filebeat-5.1.1-x86_64.rpm
+#    - logstash-5.1.1.rpm
