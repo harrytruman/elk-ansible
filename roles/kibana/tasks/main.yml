@@ -1,12 +1,12 @@
-- name: install kibana
-  yum:
-    name: kibana
-    state: present
-
-#- name: Install Kibana Package
+#- name: install kibana
 #  yum:
-#    name: "{{ kibana_package }}"
+#    name: kibana
 #    state: present
+
+- name: Install Kibana Package
+  yum:
+    name: "{{ kibana_package }}"
+    state: present
 
 - name: Allow Kibana user to bind to privileged ports
   shell: |

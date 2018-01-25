@@ -1,0 +1,12 @@
+.DS_Store
+.retry
+.vscode
+.idea/*
+*.py[co]
+**/backup/*
+
+# Vim swap files
+*.swp
+*.swo
+*~
+

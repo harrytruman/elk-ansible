@@ -1,0 +1,16 @@
+---
+- name: Purge all ELK components
+  hosts: all
+
+  tasks:
+  - name: Remove ELK packages
+    yum:
+      name: "{{ item }}"
+      state: absent
+    with_items:
+      - logstash
+      - kibana
+      - elasticsearch
+
+  - name: Purge ELK directories
+    command: rm -rf /usr/share/filebeat/ /usr/share/elasticsearch/ /usr/share/logstash/ /usr/share/kibana/ /etc/logstash/ /etc/filebeat/ /etc/kibana /etc/elasticsearch/ /var/lib/elasticsearch/ /var/lib/logstash/ /var/lib/filebeat /var/lib/kibana /var/log/logstash/ /var/log/elasticsearch /var/log/filebeat/

@@ -1,0 +1,75 @@
+---
+  - name: Install Elasticsearch X-Pack
+    command: /usr/share/elasticsearch/bin/elasticsearch-plugin install file:///tmp/{{ xpack_package }} --batch
+
+  - name: Restart Elasticsearch
+    service:
+      name: elasticsearch
+      state: restarted
+
+  - name: Waiting for Elasticsearch to begin listening
+    wait_for:
+      port: 9200
+      delay: 30
+
+  - name: Set X-Pack Passwords
+    shell: |
+      set timeout 30
+      spawn /usr/share/elasticsearch/bin/x-pack/setup-passwords interactive --batch
+      sleep 5
+      send "{{ vault_xpack_elastic_password }}\r"
+      sleep 1
+      send "{{ vault_xpack_elastic_password }}\r"
+      sleep 1
+      send "{{ vault_xpack_kibana_password }}\r"
+      sleep 1
+      send "{{ vault_xpack_kibana_password }}\r"
+      sleep 1
+      send "{{ vault_xpack_logstash_password }}\r"
+      sleep 1
+      send "{{ vault_xpack_logstash_password }}\r"
+      expect eof
+    args:
+      executable: /usr/bin/expect
+
+  - name: Enable SSL on Elasticsearch
+    lineinfile:
+      dest: /etc/elasticsearch/elasticsearch.yml
+      state: present
+      line: |
+        xpack.ssl.keystore.path: {{ssl_certs_path}}
+        xpack.ssl.truststore.path: {{ssl_certs_path}}
+        xpack.security.transport.ssl.verification_mode: certificate 
+        xpack.security.transport.ssl.enabled: true
+
+  - name: Restart Elasticsearch
+    service:
+      name: elasticsearch
+      state: restarted
+
+  - name: Waiting for Elasticsearch to begin listening
+    wait_for:
+      port: 9200
+      delay: 30
+
+  - name: Install Logstash xpack
+    command: /usr/share/logstash/bin/logstash-plugin install file:///tmp/{{ xpack_package }}
+
+  - name: Install Kibana xpack
+    command: /usr/share/kibana/bin/kibana-plugin install file:///tmp/{{ xpack_package }}
+
+  - name: Set Kibana user/pass
+    lineinfile:
+      dest: /etc/kibana/kibana.yml
+      state: present
+      line: |
+        elasticsearch.username: "kibana"
+        elasticsearch.password: "{{ vault_xpack_kibana_password }}"
+
+  - name: Set Logstash user/pass
+    lineinfile:
+      dest: /etc/logstash/logstash.yml
+      state: present
+      line: |
+        xpack.monitoring.elasticsearch.username: logstash_system
+        xpack.monitoring.elasticsearch.password: {{ vault_xpack_logstash_password }}

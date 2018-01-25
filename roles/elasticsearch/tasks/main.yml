@@ -3,15 +3,15 @@
     name: java-1.8.0-openjdk
     state: present
 
-- name: install elasticsearch
-  yum:
-    name: elasticsearch
-    state: present
-
-#- name: Install ELK Packages
+#- name: install elasticsearch
 #  yum:
-#    name: "{{ elasticsearch_package }}"
+#    name: elasticsearch
 #    state: present
+
+- name: Install ELK Packages
+  yum:
+    name: "{{ elasticsearch_package }}"
+    state: present
 
 - name: set elasticsearch cluster name
   lineinfile:
@@ -20,12 +20,21 @@
     insertafter: "^#cluster.name"
     line: "cluster.name: {{ elastic_cluster_name }}"
 
+- name: set elasticsearch cluster hosts
+  lineinfile:
+    dest: /etc/elasticsearch/elasticsearch.yml
+    state: present
+    regexp: #discovery.zen.ping.unicast.hosts
+    insertafter: "^#discovery.zen.ping.unicast.hosts"
+    line: "discovery.zen.ping.unicast.hosts: {{ groups['elasticsearch'] | to_yaml }}"
+  when: groups['elasticsearch']|length > 1
+
 - name: set elasticsearch server address
   lineinfile:
     dest: /etc/elasticsearch/elasticsearch.yml
     regexp: #network.host
     insertafter: "^#network.host"
-    line: "network.host: {{ ansible_hostname }}"
+    line: "network.host: 0.0.0.0"
 
 - name: set jvm minimum memory to 50%
   lineinfile:

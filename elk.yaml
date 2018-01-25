@@ -13,4 +13,5 @@
     - role: kibana
     - role: logstash
 #    - role: filebeat
-    - role: ssl
+#    - role: ssl
+#    - role: xpack

@@ -79,7 +79,22 @@
     no_log: true
     tags: [ssl-certs,configuration]
 
-  - name: Generate strong DHE parameter - https://weakdh.org/
+  - name: Generate strong DHE parameter
     command: openssl dhparam -out {{ssl_certs_dhparam_path}} {{ssl_certs_dhparam_size}} creates={{ssl_certs_dhparam_path}}
     when: ssl_certs_generate_dh_param
     tags: [ssl-certs,configuration]
+
+  - name: set kibana ssl certs
+    lineinfile:
+      dest: /etc/kibana/kibana.yml
+      regexp: #server.ssl.key
+      insertafter: "#server.ssl.key"
+      line: |
+        server.ssl.enabled: true
+        server.ssl.certificate: {{ssl_certs_path}}/certs/{{ssl_certs_common_name}}.pem
+        server.ssl.key: {{ssl_certs_path}}/private/{{ssl_certs_common_name}}.key
+
+  - name: restart kibana
+    service:
+      name: kibana
+      state: restarted

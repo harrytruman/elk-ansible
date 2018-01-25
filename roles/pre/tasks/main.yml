@@ -1,22 +1,27 @@
-- name: download and install elasticsearch GPG key
-  rpm_key:
-    state=present
-    key=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+---
+- name: Copy ELK Packages
+  copy:
+    src: "{{ item }}"
+    dest: /tmp/{{ item }}
+    mode: 0644
+  with_items:
+    - elasticsearch-6.1.1.rpm
+    - kibana-6.1.1-x86_64.rpm
+    - filebeat-6.1.1-x86_64.rpm
+    - logstash-6.1.1.rpm
+    - x-pack-6.1.1.zip
 
-- name: create repo for elasticsearch 5.x packages
-  yum_repository:
-    name: elasticsearch
-    description: Elasticsearch repository for 5.x packages
-    baseurl: https://artifacts.elastic.co/packages/6.x/yum
-    gpgcheck: yes
-
-#- name: Copy ELK Packages
-#  copy:
-#    src: "{{ item }}"
-#    dest: /tmp/{{ item }}
-#    mode: 0644
-#  with_items:
-#    - elasticsearch-5.1.1.rpm
-#    - kibana-5.1.1-x86_64.rpm
-#    - filebeat-5.1.1-x86_64.rpm
-#    - logstash-5.1.1.rpm
+- name: Open firewall ports
+  command: | 
+    firewall-cmd --add-port=5055/tcp
+    firewall-cmd --permanent --add-port=5055/tcp
+    firewall-cmd --add-port=9200/tcp
+    firewall-cmd --permanent --add-port=9200/tcp
+    firewall-cmd --add-service=https
+    firewall-cmd --permanent --add-service=https
+    firewall-cmd --add-masquerade
+    firewall-cmd --permanent --add-masquerade
+    firewall-cmd --permanent --direct --add-rule ipv4 nat OUTPUT 1 -p tcp -d 127.0.0.1 --dport 443 -j REDIRECT --to-ports 9200
+    firewall-cmd --permanent --direct --add-rule ipv6 nat OUTPUT 1 -p tcp -d 127.0.0.1 --dport 443 -j REDIRECT --to-ports 9200
+    firewall-cmd --permanent --direct --add-rule ipv4 nat PREROUTING 1 -p tcp -d 10.51.222.6 --dport 443 -j REDIRECT --to-ports 9200
+    firewall-cmd --permanent --direct --add-rule ipv6 nat PREROUTING 1 -p tcp -d 10.51.222.6 --dport 443 -j REDIRECT --to-ports 9200
