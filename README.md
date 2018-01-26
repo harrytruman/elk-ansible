@@ -1,4 +1,4 @@
-# ELK
+# ELK for Ansible Tower
 
 #### Elasticsearch
 Elasticsearch is a highly scalable, centralized data storage repository. It provides a RESTful interface in order to get data out, and put data in. Each node in an Elasticsearch cluster contributes storage, so there is no need for monolithic storage arrays and shared storage between Elasticsearch nodes.
