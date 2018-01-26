@@ -35,7 +35,7 @@ filter {
 
 output {
   elasticsearch {
-    hosts => "azwus2imetwrd3:9200"
+    hosts => "hostname:9200"
   }
 }
 ```
@@ -76,21 +76,21 @@ After receiving and filtering Tower syslogs, Logstash forwards the parsed messag
     "event_data": {
       "play": "collect device facts and display OS version",
       "event_loop": null,
-      "remote_addr": "tusredrwecn3p1",
+      "remote_addr": "hostname",
       "res": {
         "_ansible_no_log": false,
         "ansible_facts": {
-          "hostname": "TUSREDRWECN3P1"
+          "hostname": "hostname"
         },
         "changed": false
       },
       "role": "network_facts",
-      "task_args": "hostname=TUSREDRWECN3P1",
+      "task_args": "hostname=hostname",
       "pid": 3,
       "play_pattern": "all",
       "playbook_uuid": "703e7b8b-f22f-46f2-838d-e855f3ece15e",
       "task": "set hostname fact",
-      "host": "tusredrwecn3p1",
+      "host": "hostname",
       "task_path": "/var/lib/awx/projects/_7__ansible_network/roles/network_facts/tasks/cisco-nxos.yml:19",
       "task_uuid": "000d3af9-c8e6-2aaa-f2e7-0000000000dd",
       "play_uuid": "000d3af9-c8e6-2aaa-f2e7-000000000022",
@@ -120,7 +120,7 @@ After receiving and filtering Tower syslogs, Logstash forwards the parsed messag
     "cluster_host_id": "localhost",
     "job": 82,
     "verbosity": 0,
-    "host_name": "tusredrwecn3p1",
+    "host_name": "hostname",
     "changed": false
   },
   "fields": {
