@@ -5,11 +5,11 @@ Before running, be sure to gather facts on inventory hosts. If you don't, the El
 
 `ansible -m setup all`
 
-###Pre-configuration
+### Pre-configuration
   1. Extract ELK packages
   2. Set firewalld rules to open ELK ports and foward 443 to 9200
 
-###Elasticsearch
+### Elasticsearch
   1. Install JDK and Elasticsearch
   2. Bind to default IP address, port 9200
   3. Set JVM min/max memory to 50% of system RAM
@@ -17,28 +17,28 @@ Before running, be sure to gather facts on inventory hosts. If you don't, the El
   5. Set cluster nodes (unless single instance)
   6. Start service and validate that Elasticsearch is up and available
   
-###Kibana
+### Kibana
   1. Install Kibana
   2. Bind to default IP address, port 5601
   3. Assign Elasticsearch URL to default.ip:9200
   4. Start service
   
-###Logstash
+### Logstash
   1. Install JDK and Logstash
   2. Place template to set input as port 5055 and output to Elasticsearch at default.ip:9200
   3. Start service and wait for it become available
   
-###Filebeat
+### Filebeat
   1. Install Filebeat
   2. Place template with some default log locations and output to logstash at default.ip:5044
   3. Start service
   
-###SSL:
+### SSL:
   1. Create self-signed certs or place custom certs on filesystem
   2. Add SSL certs to Kibana config
   3. Restart Kibana
  
-###X-Pack: [Work in Progress] # License required for most x-pack functionality
+### X-Pack: [Work in Progress] # License required for most x-pack functionality
   1. Install x-pack into Elasticsearch; restart service
   2. Set custom ELK x-pack credentials (vaulted)
   3. Add new x-pack creds to ELK configs
