@@ -44,7 +44,8 @@ Before running, be sure to gather facts on inventory hosts. If you don't, the El
   3. Add new x-pack creds to ELK configs
   4. Add SSL configs to ELK services; restart services
   
-  
+
+# ELK Components
 #### Elasticsearch
 Elasticsearch is a highly scalable, centralized data storage repository. It provides a RESTful interface in order to get data out, and put data in. Each node in an Elasticsearch cluster contributes storage, so there is no need for monolithic storage arrays and shared storage between Elasticsearch nodes.
 
