@@ -54,7 +54,8 @@ Logstash is a data ingestion and processing tool. It is flexible in nature and a
 #### Kibana
 Kibana is the user interface that interacts directly with Elasticsearch. Kibana will display the Elasticsearch indexed data in a visual manner to help end users identify trends.
 
-## Part 1: Logstash
+
+# Intro to Logstash
 The Logstash event processing pipeline has three stages: inputs → filters → outputs. Inputs generate events, filters modify them, and outputs ship them elsewhere. Inputs and outputs support codecs that enable you to encode or decode the data as it enters or exits the pipeline without having to use a separate filter.
 
 ### Configuration
