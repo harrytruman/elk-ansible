@@ -17,3 +17,9 @@ elk_packages:
   - "{{ filebeat_package }}"
   - "{{ logstash_package }}"
   - "{{ xpack_package }}"
+
+# These would ideally be vaulted, but the x-pack stores them plaintext in
+# the ELK configs anyway...
+vault_xpack_elastic_password: elastic
+vault_xpack_kibana_password: kibana
+vault_xpack_logstash_password: logstash
