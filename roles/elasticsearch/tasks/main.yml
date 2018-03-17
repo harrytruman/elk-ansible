@@ -3,38 +3,20 @@
     name: java-1.8.0-openjdk
     state: present
 
-#- name: install elasticsearch
+- name: install elasticsearch
+  yum:
+    name: elasticsearch
+    state: present
+
+#- name: Install ELK Packages
 #  yum:
-#    name: elasticsearch
+#    name: /tmp/{{ elasticsearch_package }}
 #    state: present
 
-- name: Install ELK Packages
-  yum:
-    name: "{{ elasticsearch_package }}"
-    state: present
-
-- name: set elasticsearch cluster name
-  lineinfile:
+- name: place elasticsearch config template
+  template:
+    src: templates/elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
-    regexp: #cluster.name
-    insertafter: "^#cluster.name"
-    line: "cluster.name: {{ elastic_cluster_name }}"
-
-- name: set elasticsearch cluster hosts
-  lineinfile:
-    dest: /etc/elasticsearch/elasticsearch.yml
-    state: present
-    regexp: #discovery.zen.ping.unicast.hosts
-    insertafter: "^#discovery.zen.ping.unicast.hosts"
-    line: "discovery.zen.ping.unicast.hosts: {{ groups['elasticsearch'] | to_yaml }}"
-  when: groups['elasticsearch']|length > 1
-
-- name: set elasticsearch server address
-  lineinfile:
-    dest: /etc/elasticsearch/elasticsearch.yml
-    regexp: #network.host
-    insertafter: "^#network.host"
-    line: "network.host: 0.0.0.0"
 
 - name: set jvm minimum memory to 50%
   lineinfile:
@@ -64,9 +46,9 @@
 
 - name: validate that elasticsearch is up and available
   uri:
-    url: http://{{ ansible_hostname }}:9200
+    url: http://{{ ansible_default_ipv4.address }}:9200
     status_code: 200
   register: result
   until: result.status == 200
   retries: 60
-  delay: 1
+  delay: 2
