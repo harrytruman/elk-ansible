@@ -3,15 +3,15 @@
     name: java-1.8.0-openjdk
     state: present
 
-#- name: install logstash
-#  yum:
-#    name: logstash
-#    state: present
-
-- name: Install ELK Packages
+- name: install logstash
   yum:
-    name: "{{ logstash_package }}"
+    name: logstash
     state: present
+
+#- name: Install ELK Packages
+#  yum:
+#    name: "{{ logstash_package }}"
+#    state: present
 
 - name: place logstash processing template
   template:
