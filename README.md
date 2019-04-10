@@ -5,9 +5,9 @@ Before running, be sure to update your inventory file to add the username and pa
 
 `ansible -m setup all`
 
-And run the ELK install role:
+And run the ELK install role, making sure to define a name for the ELK cluster.
 
-`ansible-playbook -i inventory/hosts elk.yaml`
+`ansible-playbook -i inventory/hosts elk.yaml -e "elk_cluster_name=ELKdemo"`
 
 ### Pre-configuration
   1. Extract ELK packages
