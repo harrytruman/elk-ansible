@@ -12,7 +12,7 @@
     gpgcheck: yes
 
 - name: Open firewall ports
-  command: | 
+  shell : | 
     firewall-cmd --add-port=5055/tcp
     firewall-cmd --permanent --add-port=5055/tcp
     firewall-cmd --add-port=9200/tcp
