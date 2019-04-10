@@ -24,7 +24,7 @@
     dest: /etc/logstash/logstash.yml
     regexp: ^http.host
     insertafter: "^# http.host" 
-    line: "http.host: {{ ansible_hostname }}"
+    line: "http.host: {{ ansible_default_ipv4.address }}"
 
 - name: start logstash service
   service:
