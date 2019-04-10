@@ -29,9 +29,9 @@
 - name: set elasticsearch node address
   lineinfile:
     dest: /etc/kibana/kibana.yml
-    regexp: #elasticsearch.url
-    insertafter: "^#elasticsearch.url"
-    line: "elasticsearch.url: \"http://{{ ansible_hostname }}:9200\""
+    regexp: #elasticsearch.hosts
+    insertafter: "^#elasticsearch.hosts"
+    line: "elasticsearch.hosts: \"{{ groups['elasticsearch'] | to_yaml }}\""
 
 - name: start kibana service
   systemd:
