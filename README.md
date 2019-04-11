@@ -1,7 +1,9 @@
 # ELK for Ansible Tower
 These playbooks install/configure an ELK stack for Tower. Elasticsearch, Logstash, Kibana, and Filebeat; optionally with SSL, and the ELK x-pack add-on.
 
-Before running, be sure to update your inventory file to add the username and password that Ansible will run as. Also, gather facts on inventory hosts (if you don't, the Elasticsearch setup will fail trying to use the host memory fact).
+Logstash is configured to listen on port 5055, and will tag all messages a 'tower'.
+
+Before running elk.yaml, be sure to update your inventory file to add the username and password that Ansible will run as. Also, gather facts on inventory hosts (if you don't, the Elasticsearch setup will fail trying to use the host memory fact).
 
 `ansible -m setup all`
 
