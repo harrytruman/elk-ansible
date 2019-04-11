@@ -31,7 +31,7 @@
     dest: /etc/kibana/kibana.yml
     regexp: #elasticsearch.hosts
     insertafter: "^#elasticsearch.hosts"
-    line: "elasticsearch.hosts: \"[{{ groups['elasticsearch'] | to_yaml }}\"]"
+    line: "elasticsearch.hosts: \"[{ groups['elasticsearch'] | to_yaml }}\"]"
 
 - name: start kibana service
   systemd:
