@@ -32,23 +32,6 @@ And run the ELK install role, making sure to define a name for the ELK cluster.
   2. Place template to set input as port 5055 and output to Elasticsearch at default.ip:9200
   3. Start service and wait for it become available
   
-### Filebeat
-  1. Install Filebeat
-  2. Place template with some default log locations and output to logstash at default.ip:5044
-  3. Start service
-  
-### SSL:
-  1. Create self-signed certs or place custom certs on filesystem
-  2. Add SSL certs to Kibana config
-  3. Restart Kibana
- 
-### X-Pack: [Work in Progress] # License required for most x-pack functionality
-  1. Install x-pack into Elasticsearch; restart service
-  2. Set custom ELK x-pack credentials (vaulted)
-  3. Add new x-pack creds to ELK configs
-  4. Add SSL configs to ELK services; restart services
-  
-
 # ELK Components
 #### Elasticsearch
 Elasticsearch is a highly scalable, centralized data storage repository. It provides a RESTful interface in order to get data out, and put data in. Each node in an Elasticsearch cluster contributes storage, so there is no need for monolithic storage arrays and shared storage between Elasticsearch nodes.
@@ -113,7 +96,7 @@ After receiving and filtering Tower syslogs, Logstash forwards the parsed messag
 
 ```
 {
-  "_index": "logstash-2017.09.12",
+  "_index": "logstash-date",
   "_type": "logstash",
   "_id": "AV53BdXOS2azg4aDEJWy",
   "_score": 1,
