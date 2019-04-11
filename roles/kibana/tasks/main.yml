@@ -17,7 +17,7 @@
     dest: /etc/kibana/kibana.yml
     regexp: #server.name
     insertafter: "^#server.host"
-    line: "server.host: \"{{ ansible_hostname }}\""
+    line: "server.host: \"{{ ansible_default_ipv4.address }}\""
 
 - name: set kibana port to 443
   lineinfile:
@@ -31,7 +31,7 @@
     dest: /etc/kibana/kibana.yml
     regexp: #elasticsearch.hosts
     insertafter: "^#elasticsearch.hosts"
-    line: "elasticsearch.hosts: \"{{ groups['elasticsearch'] | to_yaml }}\""
+    line: "elasticsearch.hosts: \"[{{ groups['elasticsearch'] | to_yaml }}\"]"
 
 - name: start kibana service
   systemd:
