@@ -7,6 +7,9 @@
   hosts: all
   gather_facts: true
 
+  vars:
+    elk_cluster_name: elk-demo
+
   roles:
     - role: pre
     - role: elasticsearch

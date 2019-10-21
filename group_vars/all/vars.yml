@@ -1,22 +1,19 @@
-#elasticsearch_package: /tmp/elasticsearch-5.5.2.rpm
-#kibana_package: /tmp/kibana-5.5.2-x86_64.rpm
+#elasticsearch_package: /tmp/elasticsearch-6.1.1.rpm
+#kibana_package: /tmp/kibana-6.1.1-x86_64.rpm
+#logstash_package: /tmp/logstash-6.1.1.rpm
 #filebeat_package: /tmp/filebeat-5.5.2-x86_64.rpm
-#logstash_package: /tmp/logstash-5.5.2.rpm
+#xpack_package: /tmp/xpack-6.1.1.rpm
 
 elastic_cluster_name: elk-ansible
 
-elasticsearch_package: /tmp/elasticsearch-6.1.1.rpm
-kibana_package: /tmp/kibana-6.1.1-x86_64.rpm
-filebeat_package: /tmp/filebeat-6.1.1-x86_64.rpm
-logstash_package: /tmp/logstash-6.1.1.rpm
-xpack_package: /tmp/xpack-6.1.1.rpm
+elasticsearch_package: elasticsearch-7.4.0-x86_64.rpm
+kibana_package: kibana-7.4.0-x86_64.rpm
+logstash_package: logstash-7.4.0.rpm
 
 elk_packages:
   - "{{ elasticsearch_package }}"
   - "{{ kibana_package }}"
-  - "{{ filebeat_package }}"
   - "{{ logstash_package }}"
-  - "{{ xpack_package }}"
 
 # These would ideally be vaulted, but the x-pack stores them plaintext in
 # the ELK configs anyway...

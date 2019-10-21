@@ -14,8 +14,8 @@ localhost
 
 [all:vars]
 ansible_become=yes
-ansible_user=
-ansible_password=
+ansible_user=root
+ansible_password=password
 ansible_become_password="{{ ansible_password }}"
 ansible_ssh_user="{{ ansible_user }}"
 ansible_ssh_password="{{ ansible_password }}"

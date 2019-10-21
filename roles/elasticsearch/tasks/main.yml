@@ -5,13 +5,9 @@
 
 - name: install elasticsearch
   yum:
+#    name: /tmp/{{ elasticsearch_package }}
     name: elasticsearch
     state: present
-
-#- name: Install ELK Packages
-#  yum:
-#    name: /tmp/{{ elasticsearch_package }}
-#    state: present
 
 - name: place elasticsearch config template
   template:
@@ -35,7 +31,7 @@
 - name: set vm.max_map_count to 262144
   sysctl:
     name: vm.max_map_count
-    value: 262144
+    value: "262144"
     state: present
 
 - name: start elasticsearch service

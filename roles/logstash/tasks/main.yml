@@ -5,13 +5,9 @@
 
 - name: install logstash
   yum:
+#    name: /tmp/{{ logstash_package }}
     name: logstash
     state: present
-
-#- name: Install ELK Packages
-#  yum:
-#    name: "{{ logstash_package }}"
-#    state: present
 
 - name: place logstash processing template
   template:
@@ -24,7 +20,7 @@
     dest: /etc/logstash/logstash.yml
     regexp: ^http.host
     insertafter: "^# http.host" 
-    line: "http.host: {{ ansible_default_ipv4.address }}"
+    line: "http.host: {{ ansible_default_ipv4.address | quote }}"
 
 - name: start logstash service
   service:
