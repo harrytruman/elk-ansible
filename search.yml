@@ -1,0 +1,48 @@
+---
+- name: elk search workflow
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+  - name: search elasticsearch for job id
+    uri:
+      url: "http://{{ cluster_fqdn }}:9200/_search"
+      method: "GET"
+      body_format: "json"
+      body: >
+        {
+           "query": {
+            "match_phrase": {
+              #"ansible_facts.config.wlan": {
+              "job_id": {
+                "query":"{{ job_id }}"
+              }
+            }
+          }
+        }
+        '
+      headers:
+        Content-Type: "application/json"
+      #client_cert: /etc/ssl/cert.pem
+      #client_key: /etc/ssl/cert.key
+    register: elk_search
+
+  - name: retrieve a list of hostnames
+    set_fact:
+      elk_hostnames: "{{ elk_search.json.hits.hits | map(attribute='_source.ansible_facts.hostname') | list | unique | lower }}"
+
+  - name: retrieve hostnames from search results
+    debug:
+      var: elk_hostnames
+
+  - name: add hostnames to playbook inventory
+    add_host:
+      hostname: elk_hostnames
+      inventory_dir: "inventory"
+
+- name: run role against search result hostnames 
+  hosts: "{{ hostvars['localhost']['elk_hostnames'] }}"
+  gather_facts: false
+  connection: local
+  roles:
+    - role: tower-job
