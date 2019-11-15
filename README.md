@@ -215,9 +215,15 @@ In the example log above, I'm looking for fact collection messages. In this case
 So you have Tower logging to ELK. Now you can search all of those logs and begin correlating data! Here's a playbook that will get you started searching. In the example below, it will:
   1. Search Ansible facts for anything with a configured wireless device
   2. Create and display a list of unique hostnames
-  3. Add hostnames to inventory and run a network fact collection role to discover them
-  
-This is a nifty example of using Elasticsearch to create dynamic inventories. Simply put, this is the starting point to creating an inventory CMDB.
+  3. Add hostnames to inventory and run a fact collection role to discover them
+
+In the example below, these are the interesting vars:
+  1. `search_fact` is looking for a particular Ansible fact. Another example could be the hostname fact, `ansible_facts.hostname`.
+  2. `search_term` is the query string that gets posted to Elasticsearch. In this case, I'm looking for `wlan ssid-profile`.
+
+To run this playbook:
+
+`ansible-playbook elk.yaml -e "cluster_fqdn=elk.server.com,search_fact=config.wlan,search_term=wlan ssid-profile"`
 
 ```
 ---
@@ -235,8 +241,8 @@ This is a nifty example of using Elasticsearch to create dynamic inventories. Si
         {
            "query": {
             "match_phrase": {
-              "ansible_facts.config.wlan": {
-                "query":"wlan ssid-profile"
+              "ansible_facts.{{ search_fact | default('config.wlan') }}": {
+                "query":"{{ search_term | default('wlan ssid-profile') }}"
               }
             }
           }
@@ -268,3 +274,5 @@ This is a nifty example of using Elasticsearch to create dynamic inventories. Si
   roles:
     - role: network-facts
 ```
+
+This is a nifty example of using Elasticsearch to create dynamic inventories. Simply put, this is the starting point to creating an inventory CMDB.
