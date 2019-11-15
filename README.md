@@ -62,7 +62,7 @@ Kibana is the user interface that interacts directly with Elasticsearch. Kibana 
 
 
 # Getting Started with ELK
-## Logstash
+## Logstash 101
 The Logstash event processing pipeline has three stages: inputs → filters → outputs. Inputs generate events, filters modify them, and outputs ship them elsewhere. Inputs and outputs support codecs that enable you to encode or decode the data as it enters or exits the pipeline without having to use a separate filter.
 
 ### Configuration
@@ -113,7 +113,7 @@ Though not used [yet] in our setup, codecs are basically stream filters that can
 [See the full list of codec types](https://www.elastic.co/guide/en/logstash/current/codec-plugins.html).
 
 
-## Elasticsearch
+## Elasticsearch 101
 
 ### Searching Logs
 
@@ -209,8 +209,10 @@ In the example log above, I'm looking for fact collection messages. In this case
           "hostname": "rhel8-lab"
 ```
 
+
 # Integrating Elasticsearch with Tower
-## Searching and Adding Inventories
+
+## Searching Facts/Logs and Adding Inventories
 
 So you have Tower logging to ELK. Now you can search all of those logs and begin correlating data! Here's a playbook that will get you started searching. In the example below, it will:
   1. Search Ansible facts for anything with a configured wireless device
