@@ -27,7 +27,7 @@ Elasticsearch, Logstash, and Kibana will be installed to their respective invent
 ## What Does This Role Do?
 
 ### Pre-configuration
-  1. Extract ELK packages
+  1. Create Elastic package repos
   2. Set firewalld rules to open ports
 
 ### Elasticsearch
