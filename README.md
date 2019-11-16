@@ -1,6 +1,6 @@
 # ELK + Ansible Tower
 
-## Using ELK to Build a Search Engine and Inventory CMDB for Ansible Tower
+## Deploy an ELK stack ready to create dynamic inventories from Ansible facts and Tower job results
 
 This role will install and configure an ELK cluster to be used as a search engine and inventory CMDB for Ansible Tower. Once Tower is configured to send logs to ELK, you'll have the ability to quickly and easily search past jobs to:
   1. Validate changes
