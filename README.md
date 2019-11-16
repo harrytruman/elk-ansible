@@ -1,58 +1,79 @@
-# ELK for Ansible Tower
-These playbooks will install/configure Elasticsearch, Logstash, and Kibana on their respective inventory groups. Logstash is configured to listen on port 5055, and will tag all messages as 'tower'. Note that this is a non-SSL setup for now.
+# ELK + Ansible Tower
 
-Before running elk.yaml, be sure to update your inventory file to add the username and password that Ansible will run as. Also, gather facts on inventory hosts (if you don't, the Elasticsearch setup will fail trying to use the host memory fact).
+## Deploy an ELK stack ready to create dynamic inventories from Ansible facts and Tower job results
 
-`ansible -m setup all`
+This role will install and configure an ELK cluster to be used as a search engine and inventory CMDB for Ansible Tower. Once Tower is configured to send logs to ELK, you'll have the ability to quickly and easily search past jobs to:
+  1. Validate changes
+  2. Verify job results
+  3. Build and manage inventories
+  4. Perform security audits
+  5. Identify configuration changes
+  6. Automate troubleshooting and remediation
 
-And run the ELK install role, making sure to define a name for the ELK cluster.
+Most importantly, this role is the starting point to creating a full-blown inventory CMDB for Tower.
 
-`ansible-playbook -i inventory/hosts elk.yaml -e "elk_cluster_name=ELKdemo"`
+## How Do I Install This Role?
+
+Before running `elk.yaml`, be sure to update your inventory file to add the username and password that Ansible will use. Also, gather facts on inventory hosts first (Elasticsearch setup will fail trying to use the host memory fact).
+
+  1. `ansible -m setup all`
+
+Next, run the ELK install role and define a name for the ELK cluster.
+
+  2. `ansible-playbook elk.yaml -e "elk_cluster_name=elk-tower"`
+
+Elasticsearch, Logstash, and Kibana will be installed to their respective inventory groups. Logstash is configured to listen on port 5055, and will tag all messages as 'tower'.
+
+## What Does This Role Do?
 
 ### Pre-configuration
-  1. Extract ELK packages
-  2. Set firewalld rules to open ELK ports and foward 443 to 9200
+  1. Create Elastic package repos
+  2. Set firewalld rules to open ports
 
 ### Elasticsearch
   1. Install JDK and Elasticsearch
-  2. Bind to default IP address, port 9200
-  3. Set JVM min/max memory to 50% of system RAM
-  4. Increase vm.max_map_count to 262144
-  5. Set cluster nodes (unless single instance)
-  6. Start service and validate that Elasticsearch is up and available
+  2. Set JVM min/max memory to 50% of system RAM
+  3. Increase vm.max_map_count (large cluster default)
+  5. Define cluster nodes and set port (9200, default)
+  6. Start service; validate cluster is up and available
   
 ### Kibana
   1. Install Kibana
-  2. Bind to default IP address, port 5601
-  3. Assign Elasticsearch URL to default.ip:9200
-  4. Start service
+  2. Bind to default IP address and set port (5601, default)
+  3. Assign Elasticsearch cluster URL
+  4. Start service; validate Kibana is up and available
   
 ### Logstash
   1. Install JDK and Logstash
-  2. Place template to set input as port 5055 and output to Elasticsearch at default.ip:9200
-  3. Start service and wait for it become available
-  
-# ELK Components
-#### Elasticsearch
-Elasticsearch is a highly scalable, centralized data storage repository. It provides a RESTful interface in order to get data out, and put data in. Each node in an Elasticsearch cluster contributes storage, so there is no need for monolithic storage arrays and shared storage between Elasticsearch nodes.
-
-#### Logstash
-Logstash is a data ingestion and processing tool. It is flexible in nature and allows you to format data to meet your business needs, and send data to different types of endpoints. In the case of this document, we will be using Elasticsearch as the final endpoint and Redis as an intermediate endpoint (queue) to send Logstash data. We will also configure a Logstash receiver (listens for incoming data, send to queue) and a Logstash indexer (parse the data, send to the Elasticsearch index).
-
-#### Kibana
-Kibana is the user interface that interacts directly with Elasticsearch. Kibana will display the Elasticsearch indexed data in a visual manner to help end users identify trends.
+  2. Place template to set listening address and tag Tower logs
+  3. Start service; validate Logstash is up and available
 
 
-# Intro to Logstash
+# What is ELK?
+## ELK Components
+### Elasticsearch
+Elasticsearch is a highly scalable, centralized data storage repository. It's a NOSQL-style database with a REST API, and it can be used to store virtually anything of any filetype. I use it to store a combination of raw text, infrastructure syslogs, application messages, JSON/YAML, files (pdf, doc, xml), and diagrams (vizio, pdf, png/jpeg).
+
+### Logstash
+Logstash is a data ingestion and processing tool. It is flexible in nature, allows you to easily transform data in any way, and it allows you to send that data to a staggering array of endpoints. I setup Logstash to receive server/network syslogs and Tower job logs, and I setup filters to take those different types of data and extract them into a common data format.
+
+### Kibana
+Kibana is the user interface that interacts directly with Elasticsearch. Kibana will display the Elasticsearch indexed data in a visual manner to help end users identify trends. You can easily build and share dashboards with other users and teams.
+
+
+# Getting Started with ELK
+## Logstash 101
 The Logstash event processing pipeline has three stages: inputs → filters → outputs. Inputs generate events, filters modify them, and outputs ship them elsewhere. Inputs and outputs support codecs that enable you to encode or decode the data as it enters or exits the pipeline without having to use a separate filter.
 
 ### Configuration
 Our Logstash receives messages from Tower, performs aggregation and filtering, and then forwards parsed messages to Elasticsearch to be indexed. Tower's logging settings are straight-forward and support shipping messages via HTTP/HTTPS, TCP, or UDP. As you can see from the settings below, you need only to choose the logging aggregator type (Logstash) and enter the host and port of the syslog destination.
 
-Logstash is configured via plugins, through the following file:
-```
-# /etc/logstash/conf.d/logstash.json
+Logstash filtering is configured via plugins, through the following file:
+`/etc/logstash/conf.d/logstash.json`
 
+Here's an example configuration that will listen on port 5055, tag all messages with `tower`, and forward them to Elasticsearch over port 9200:
+
+```
 input {
   http {
     port => 5055
@@ -91,8 +112,14 @@ Outputs are the final phase of the Logstash pipeline. An event can pass through 
 Though not used [yet] in our setup, codecs are basically stream filters that can operate as part of an input or output and enable you to easily separate the transport of your messages from the serialization process.
 [See the full list of codec types](https://www.elastic.co/guide/en/logstash/current/codec-plugins.html).
 
-### Message Results
-After receiving and filtering Tower syslogs, Logstash forwards the parsed messages to Elasticsearch. Below is an example of an indexed fact collection message.
+
+## Elasticsearch 101
+
+### Searching Logs
+
+After receiving and filtering Tower syslogs, Logstash forwards parsed messages to Elasticsearch where it then creates daily indexes for all logs. If you perform a basic search, it will return every individual log/message based on the timestamp at which it was received. 
+
+Below is an example of an indexed fact collection message. Note that data from any/all fields can be queried independently.
 
 ```
 {
@@ -171,4 +198,83 @@ After receiving and filtering Tower syslogs, Logstash forwards the parsed messag
 }
 ```
 
-Note that data from any/all fields can be queried independently.
+### Finding Ansible Facts 
+In the example log above, I'm looking for fact collection messages. In this case, the one I found here would be a hostbame fact: `event_data.res.ansible_facts.hostname`
+
+```
+"_source": {
+    "event_data": {,
+      "res": {
+        "ansible_facts": {
+          "hostname": "rhel8-lab"
+```
+
+
+# Integrating Elasticsearch with Tower
+
+## Searching Facts/Logs and Adding Inventories
+
+So you have Tower logging to ELK. Now you can search all of those logs and begin correlating data! Here's a playbook that will get you started searching. In the example below, it will:
+  1. Search Ansible facts for anything with a configured wireless device
+  2. Create and display a list of unique hostnames
+  3. Add hostnames to inventory and run a fact collection role to discover them
+
+In the example below, these are the interesting vars:
+  1. `search_fact` is looking for a particular Ansible fact. Another example could be the hostname fact, `ansible_facts.hostname`.
+  2. `search_term` is the query string that gets posted to Elasticsearch. In this case, I'm looking for `wlan ssid-profile`.
+
+To run this playbook:
+
+`ansible-playbook elk.yaml -e "cluster_fqdn=elk.server.com,search_fact=config.wlan,search_term=wlan ssid-profile"`
+
+```
+---
+- name: elk search workflow
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+  - name: search elasticsearch for job id
+    uri:
+      url: "http://{{ cluster_fqdn }}:9200/_search"
+      method: "GET"
+      body_format: "json"
+      body: >
+        {
+           "query": {
+            "match_phrase": {
+              "ansible_facts.{{ search_fact | default('config.wlan') }}": {
+                "query":"{{ search_term | default('wlan ssid-profile') }}"
+              }
+            }
+          }
+        }
+        '
+      headers:
+        Content-Type: "application/json"
+      #client_cert: /etc/ssl/cert.pem
+      #client_key: /etc/ssl/cert.key
+    register: elk_search
+
+  - name: retrieve a list of hostnames
+    set_fact:
+      elk_hostnames: "{{ elk_search.json.hits.hits | map(attribute='_source.ansible_facts.hostname') | list | unique | lower }}"
+
+  - name: retrieve hostnames from search results
+    debug:
+      var: elk_hostnames
+
+  - name: add hostnames to playbook inventory
+    add_host:
+      hostname: elk_hostnames
+      inventory_dir: "inventory"
+
+- name: run role against search result hostnames
+  hosts: "{{ hostvars['localhost']['elk_hostnames'] }}"
+  gather_facts: false
+  connection: local
+  roles:
+    - role: network-facts
+```
+
+This is a nifty example of using Elasticsearch to create dynamic inventories. Simply put, this is the starting point to creating an inventory CMDB.
