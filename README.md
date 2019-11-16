@@ -12,6 +12,8 @@ This role will install and configure an ELK cluster to be used as a search engin
 
 Most importantly, this role is the starting point to creating a full-blown inventory CMDB for Tower.
 
+![ELK Architecture](elk.png)
+
 ## How Do I Install This Role?
 
 Before running `elk.yaml`, be sure to update your inventory file to add the username and password that Ansible will use. Also, gather facts on inventory hosts first (Elasticsearch setup will fail trying to use the host memory fact).
