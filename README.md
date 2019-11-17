@@ -201,7 +201,7 @@ Below is an example of an indexed fact collection message. Note that data from a
 ```
 
 ### Finding Ansible Facts 
-In the example log above, I'm looking for fact collection messages. In this case, the one I found here would be a hostbame fact: `event_data.res.ansible_facts.hostname`
+In the example log above, I'm looking for fact collection messages. In this case, the one I found here would be a hostname fact: `event_data.res.ansible_facts.hostname`
 
 ```
 "_source": {
