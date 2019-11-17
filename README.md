@@ -14,6 +14,7 @@ Most importantly, this role is the starting point to creating a full-blown inven
 
 ![ELK Architecture](elk.png)
 
+
 ## How Do I Install This Role?
 
 Before running `elk.yaml`, be sure to update your inventory file to add the username and password that Ansible will use. Also, gather facts on inventory hosts first (Elasticsearch setup will fail trying to use the host memory fact).
@@ -25,6 +26,8 @@ Next, run the ELK install role and define a name for the ELK cluster.
   2. `ansible-playbook elk.yaml -e "elk_cluster_name=elk-tower"`
 
 Elasticsearch, Logstash, and Kibana will be installed to their respective inventory groups. Logstash is configured to listen on port 5055, and will tag all messages as 'tower'.
+
+
 
 ## What Does This Role Do?
 
@@ -52,7 +55,9 @@ Elasticsearch, Logstash, and Kibana will be installed to their respective invent
 
 
 # What is ELK?
+
 ## ELK Components
+
 ### Elasticsearch
 Elasticsearch is a highly scalable, centralized data storage repository. It's a NOSQL-style database with a REST API, and it can be used to store virtually anything of any filetype. I use it to store a combination of raw text, infrastructure syslogs, application messages, JSON/YAML, files (pdf, doc, xml), and diagrams (vizio, pdf, png/jpeg).
 
@@ -63,7 +68,10 @@ Logstash is a data ingestion and processing tool. It is flexible in nature, allo
 Kibana is the user interface that interacts directly with Elasticsearch. Kibana will display the Elasticsearch indexed data in a visual manner to help end users identify trends. You can easily build and share dashboards with other users and teams.
 
 
+
 # Getting Started with ELK
+
+
 ## Logstash 101
 The Logstash event processing pipeline has three stages: inputs → filters → outputs. Inputs generate events, filters modify them, and outputs ship them elsewhere. Inputs and outputs support codecs that enable you to encode or decode the data as it enters or exits the pipeline without having to use a separate filter.
 
@@ -113,6 +121,7 @@ Outputs are the final phase of the Logstash pipeline. An event can pass through 
 #### Codecs
 Though not used [yet] in our setup, codecs are basically stream filters that can operate as part of an input or output and enable you to easily separate the transport of your messages from the serialization process.
 [See the full list of codec types](https://www.elastic.co/guide/en/logstash/current/codec-plugins.html).
+
 
 
 ## Elasticsearch 101
@@ -165,7 +174,7 @@ Below is an example of an indexed fact collection message. Note that data from a
     "event_display": "Host OK",
     "end_line": 232,
     "@version": "1",
-    "host": 26,
+    "host": hostname,
     "modified": "2017-09-12T16:57:04.000Z",
     "id": 7996,
     "logger_name": "awx.analytics.job_events",
@@ -200,6 +209,7 @@ Below is an example of an indexed fact collection message. Note that data from a
 }
 ```
 
+
 ### Finding Ansible Facts 
 In the example log above, I'm looking for fact collection messages. In this case, the one I found here would be a hostname fact: `event_data.res.ansible_facts.hostname`
 
@@ -210,6 +220,15 @@ In the example log above, I'm looking for fact collection messages. In this case
         "ansible_facts": {
           "hostname": "rhel8-lab"
 ```
+
+Also of interest would be the Tower Job ID, playbook task, and inventory hostname target. These are usually what I look for to begin validating job results.
+
+`"job": 82`
+`"event_data.res.task": "set hostname fact"`
+`"event_data.res.task_action": "set_fact"`
+
+`"hostname": hostname` # This one is from Tower job logs
+`"event_data.res.hostname": hostname` This one is from Ansible playbook results
 
 
 # Integrating Elasticsearch with Tower
