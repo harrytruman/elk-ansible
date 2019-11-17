@@ -148,21 +148,21 @@ Below is an example of an indexed fact collection message. Note that data from a
     "event_data": {
       "play": "collect device facts and display OS version",
       "event_loop": null,
-      "remote_addr": "hostname",
+      "remote_addr": "rhel8-lab",
       "res": {
         "_ansible_no_log": false,
         "ansible_facts": {
-          "hostname": "hostname"
+          "hostname": "rhel8-lab"
         },
         "changed": false
       },
       "role": "network_facts",
-      "task_args": "hostname=hostname",
+      "task_args": "hostname=rhel8-lab",
       "pid": 3,
       "play_pattern": "all",
       "playbook_uuid": "703e7b8b-f22f-46f2-838d-e855f3ece15e",
       "task": "set hostname fact",
-      "host": "hostname",
+      "host": "rhel8-lab",
       "task_path": "/var/lib/awx/projects/_7__ansible_network/roles/network_facts/tasks/cisco-nxos.yml:19",
       "task_uuid": "000d3af9-c8e6-2aaa-f2e7-0000000000dd",
       "play_uuid": "000d3af9-c8e6-2aaa-f2e7-000000000022",
@@ -174,7 +174,7 @@ Below is an example of an indexed fact collection message. Note that data from a
     "event_display": "Host OK",
     "end_line": 232,
     "@version": "1",
-    "host": hostname,
+    "host": rhel8-lab,
     "modified": "2017-09-12T16:57:04.000Z",
     "id": 7996,
     "logger_name": "awx.analytics.job_events",
@@ -192,7 +192,7 @@ Below is an example of an indexed fact collection message. Note that data from a
     "cluster_host_id": "localhost",
     "job": 82,
     "verbosity": 0,
-    "host_name": "hostname",
+    "host_name": "rhel8-lab",
     "changed": false
   },
   "fields": {
@@ -223,12 +223,15 @@ In the example log above, I'm looking for fact collection messages. In this case
 
 Also of interest would be the Tower Job ID, playbook task, and inventory hostname target. These are usually what I look for to begin validating job results.
 
-`"job": 82`
-`"event_data.res.task": "set hostname fact"`
-`"event_data.res.task_action": "set_fact"`
+```
+"job": 82
 
-`"hostname": hostname` # This one is from Tower job logs
-`"event_data.res.hostname": hostname` This one is from Ansible playbook results
+"event_data.res.task": "set hostname fact"
+"event_data.res.task_action": "set_fact"
+
+"hostname": rhel8-lab                    # This one is from Tower job logs
+"event_data.res.hostname": rhel8-lab     # This one is from Ansible playbook results
+```
 
 
 # Integrating Elasticsearch with Tower
