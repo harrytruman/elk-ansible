@@ -143,7 +143,7 @@ Below is an example of an indexed fact collection message. Note that data from a
     "play": "collect device facts and display OS version",
     "parent": null,
     "role": "network_facts",
-    "stdout": "\u001b[0;32mok: [tusredrwecn3p1]\u001b[0m",
+    "stdout": "\u001b[0;32mok: [cisrtrwec]\u001b[0m",
     "start_line": 231,
     "event_data": {
       "play": "collect device facts and display OS version",
