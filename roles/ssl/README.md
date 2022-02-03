@@ -3,7 +3,7 @@ ansible-role-ssl-certs
 
 Generate and/or deploy SSL certificate
 
-Available on Ansible Galaxy: [jdauphant.ssl-certs](https://galaxy.ansible.com/list#/roles/3115)
+Available on Ansible Galaxy: [jdauphant.ssl-certs](https://galaxy.ansible.com/list#/roles/3115). check out this updated [fork](https://github.com/CTL-Fed-Security/ansible-role-ssl-certs)
 
 # Examples
 
@@ -89,3 +89,17 @@ Then simply include the role as in the first example.
                - root "/usr/share/nginx/html"
                - index index.html
 ```
+
+License
+-------
+
+BSD-2-Clause
+
+Author Information
+------------------
+
+Julien DAUPHANT
+
+
+An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+

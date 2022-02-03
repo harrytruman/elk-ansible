@@ -1,20 +1,16 @@
+---
 - name: install filebeat
-  yum:
+  ansible.builtin.yum:
     name: filebeat
-    state: present
-
-#- name: Install ELK Packages
-#  yum:
-#    name: "{{ filebeat_package }}"
-#    state: present
+    state: latest
+  notify: service
 
 - name: create filebeat config
-  template:
+  ansible.builtin.template:
     src: templates/filebeat.yml
     dest: /etc/filebeat/filebeat.yml
+  notify: service
 
-- name: start filebeat service
-  service:
-    name: filebeat
-    state: started
-    enabled: yes
+- name: Flush handlers
+  meta: flush_handlers
+...
