@@ -1,0 +1,47 @@
+---
+# ELK playbooks to pre-configure systems, and install/start individual components.
+#
+# Note: ELK services MUST be brought up in the order below.
+- name: install and configure ELK stack
+  hosts: all
+  gather_facts: true
+
+  vars:
+    elk_cluster_name: elk-demo
+
+  tasks:
+    - ansible.builtin.include_role:
+        name: pre
+
+    - ansible.builtin.include_role:
+        name: elasticsearch
+
+    - name: validate that elasticsearch is up and available
+      ansible.builtin.uri:
+        url: http://{{ ansible_default_ipv4.address }}:9200
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 60
+      delay: 2
+
+    - ansible.builtin.include_role:
+        name: kibana
+
+    - ansible.builtin.include_role:
+        name: logstash
+
+    - name: wait for service to begin listening
+      ansible.builtin.wait_for:
+        port: 5055
+        delay: 30
+
+  #  - ansible.builtin.include_role:
+  #       name: filebeat
+
+  #  - ansible.builtin.include_role:
+  #       name: ssl
+
+  #  - ansible.builtin.include_role:
+  #       name: xpack
+...

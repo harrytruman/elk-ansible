@@ -1,34 +1,29 @@
-- name: install OpenJDK 1.8.0
-  yum:
-    name: java-1.8.0-openjdk
-    state: present
-
-- name: install logstash
-  yum:
-#    name: /tmp/{{ logstash_package }}
-    name: logstash
-    state: present
+---
+- name: install applications
+  ansible.builtin.yum:
+    name:
+      - java-1.8.0-openjdk
+      - logstash
+    state: latest
+  notify: service
 
 - name: place logstash processing template
-  template:
+  ansible.builtin.template:
     src: templates/logstash.conf
     dest: /etc/logstash/conf.d/logstash.conf
     force: yes
+  notify:
+    - service
+    - firewall
 
 - name: set service listening address
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/logstash/logstash.yml
     regexp: ^http.host
-    insertafter: "^# http.host" 
+    insertafter: "^# http.host"
     line: "http.host: {{ ansible_default_ipv4.address | quote }}"
+  notify: service
 
-- name: start logstash service
-  service:
-    name: logstash
-    state: started
-    enabled: yes
-
-- name: wait for service to begin listening
-  wait_for:
-    port: 5055
-    delay: 30
+- name: Flush handlers
+  meta: flush_handlers
+...
