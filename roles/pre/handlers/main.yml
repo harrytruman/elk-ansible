@@ -1,0 +1,8 @@
+---
+- name: firewall
+  ansible.builtin.firewalld:
+    service: https
+    permanent: yes
+    state: enabled
+    immediate: yes
+...

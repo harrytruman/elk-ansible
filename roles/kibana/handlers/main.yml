@@ -1,0 +1,16 @@
+---
+# handlers file for kibana
+- name: service
+  ansible.builtin.systemd:
+    name: kibana
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: firewall
+  ansible.builtin.firewalld:
+    port: 5601/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+...

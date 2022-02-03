@@ -1,0 +1,14 @@
+---
+- name: firewall
+  ansible.posix.firewalld:
+    port: 9200/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: service
+  ansible.builtin.service:
+    name: elasticsearch
+    state: restarted
+    enabled: yes
+...
