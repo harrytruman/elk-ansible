@@ -1,14 +1,16 @@
+---
 elastic_cluster_name: elk-ansible
 
 elasticsearch_package: elasticsearch-7.4.0-x86_64.rpm
 kibana_package: kibana-7.4.0-x86_64.rpm
 logstash_package: logstash-7.4.0.rpm
 
-#elk_packages:
-#  - "{{ elasticsearch_package }}"
-#  - "{{ kibana_package }}"
-#  - "{{ logstash_package }}"
+# elk_packages:
+#   - "{{ elasticsearch_package }}"
+#   - "{{ kibana_package }}"
+#   - "{{ logstash_package }}"
 
-#vault_xpack_elastic_password: elastic
-#vault_xpack_kibana_password: kibana
-#vault_xpack_logstash_password: logstash
+# vault_xpack_elastic_password: elastic
+# vault_xpack_kibana_password: kibana
+# vault_xpack_logstash_password: logstash
+...

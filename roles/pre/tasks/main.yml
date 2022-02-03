@@ -1,50 +1,23 @@
 ---
 - name: download and install elastic GPG key
-  rpm_key:
+  ansible.builtin.rpm_key:
     state=present
     key=https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
-#- name: create repo for elastic packages
-#  yum_repository:
-#    name: elasticsearch
-#    description: Elastic 6.x Repo
-#    baseurl: https://artifacts.elastic.co/packages/6.x/yum
-#    gpgcheck: yes
-
 - name: create repo for elastic packages
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: elasticsearch
     description: Elastic 7.x Repo
     baseurl: https://artifacts.elastic.co/packages/7.x/yum
     gpgcheck: yes
 
-#- name: Copy ELK Packages
-#  copy:
-#    src: "{{ item }}"
-#    dest: /tmp/{{ item }}
-#    mode: 0644
-#  with_items:
-#    - "{{ elasticsearch_package }}"
-#    - "{{ logstash_package }}"
-#    - "{{ kibana_package }}"
+- name: Enable firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+  notify: firewall
 
-- name: Open firewall ports
-  shell : | 
-    systemctl enable firewalld
-    systemctl start firewalld
-    firewall-cmd --add-port=5055/tcp
-    firewall-cmd --permanent --add-port=5055/tcp
-    firewall-cmd --add-port=9200/tcp
-    firewall-cmd --permanent --add-port=9200/tcp
-    firewall-cmd --add-service=https
-    firewall-cmd --permanent --add-service=https
-    firewall-cmd --add-masquerade
-    firewall-cmd --permanent --add-masquerade
-    firewall-cmd --permanent --direct --add-rule ipv4 nat OUTPUT 1 -p tcp -d 127.0.0.1 --dport 443 -j REDIRECT --to-ports 9200
-    firewall-cmd --permanent --direct --add-rule ipv6 nat OUTPUT 1 -p tcp -d 127.0.0.1 --dport 443 -j REDIRECT --to-ports 9200
-    firewall-cmd --permanent --direct --add-rule ipv4 nat OUTPUT 1 -p tcp -d 127.0.0.1 --dport 4443 -j REDIRECT --to-ports 9200
-    firewall-cmd --permanent --direct --add-rule ipv6 nat OUTPUT 1 -p tcp -d 127.0.0.1 --dport 4443 -j REDIRECT --to-ports 9200
-    firewall-cmd --permanent --direct --add-rule ipv4 nat PREROUTING 1 -p tcp -d 10.51.222.6 --dport 443 -j REDIRECT --to-ports 9200
-    firewall-cmd --permanent --direct --add-rule ipv6 nat PREROUTING 1 -p tcp -d 10.51.222.6 --dport 443 -j REDIRECT --to-ports 9200
-    firewall-cmd --runtime-to-permanent
-    systemctl restart firewalld
+- name: Flush handlers
+  meta: flush_handlers
+...

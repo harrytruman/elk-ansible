@@ -1,50 +1,43 @@
-- name: install OpenJDK 1.8.0
-  yum:
-    name: java-1.8.0-openjdk
-    state: present
-
-- name: install elasticsearch
-  yum:
-#    name: /tmp/{{ elasticsearch_package }}
-    name: elasticsearch
-    state: present
+---
+- name: install required applications
+  ansible.builtin.yum:
+    name:
+      - elasticsearch
+      - java-1.8.0-openjdk
+    state: latest
+  notify: service
 
 - name: place elasticsearch config template
-  template:
+  ansible.builtin.template:
     src: templates/elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
+  notify:
+    - service
+    - firewall
 
 - name: set jvm minimum memory to 50%
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/elasticsearch/jvm.options
     regexp: '^(.*)Xms(\d+)g(.*)$'
     line: '\1Xms{{ (ansible_memtotal_mb*0.5)|int|abs }}m\3'
     backrefs: yes
-  
+  notify: service
+
 - name: set jvm maximum memory to 50%
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/elasticsearch/jvm.options
     regexp: '^(.*)Xmx(\d+)g(.*)$'
     line: '\1Xmx{{ (ansible_memtotal_mb*0.5)|int|abs }}m\3'
     backrefs: yes
+  notify: service
 
 - name: set vm.max_map_count to 262144
-  sysctl:
+  ansible.posix.sysctl:
     name: vm.max_map_count
     value: "262144"
     state: present
+  notify: service
 
-- name: start elasticsearch service
-  service:
-    name: elasticsearch
-    state: started
-    enabled: yes
-
-- name: validate that elasticsearch is up and available
-  uri:
-    url: http://{{ ansible_default_ipv4.address }}:9200
-    status_code: 200
-  register: result
-  until: result.status == 200
-  retries: 60
-  delay: 2
+- name: Flush handlers
+  meta: flush_handlers
+...

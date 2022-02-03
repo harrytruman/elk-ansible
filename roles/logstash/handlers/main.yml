@@ -1,0 +1,15 @@
+---
+# handlers file for logstash
+- name: service
+  ansible.builtin.service:
+    name: logstash
+    state: restarted
+    enabled: yes
+
+- name: firewall
+  ansible.builtin.firewalld:
+    port: 5055/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+...
