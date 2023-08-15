@@ -236,9 +236,9 @@ Also of interest would be the Tower Job ID, playbook task, and inventory hostnam
 ```
 
 
-# Integrating Elasticsearch with Tower
+# Integrating Ansible and Elasticsearch
 
-## Searching Facts/Logs and Adding Inventories
+## Searching Facts/Logs and Beginning to Perform Remediation
 
 So you have Tower logging to ELK. Now you can search all of those logs and begin correlating data! Here's a playbook that will get you started searching. In the example below, it will:
   1. Search Ansible facts for anything with a configured wireless device
