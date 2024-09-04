@@ -1,8 +1,8 @@
-# ELK + Ansible Tower
+# ELK + Ansible
 
-## Deploy an ELK stack ready to create dynamic inventories from Ansible facts and Tower job results
+## Deploy an ELK stack ready to create dynamic inventories from Ansible facts and AAP job results
 
-This role will install and configure an ELK cluster to be used as a search engine and inventory CMDB for Ansible Tower. Once Tower is configured to send logs to ELK, you'll have the ability to quickly and easily search past jobs.
+This role will install and configure an ELK cluster to be used as a search engine and inventory CMDB for Ansible. Once Tower is configured to send logs to ELK, you'll have the ability to quickly and easily search past jobs.
 
 You can search logs/facts to:
   1. Validate changes
@@ -12,7 +12,7 @@ You can search logs/facts to:
   5. Identify configuration changes
   6. Automate troubleshooting and remediation
 
-Most importantly, this role is the starting point to creating a full-blown inventory CMDB for Tower.
+Most importantly, this role is the starting point to creating a full-blown inventory CMDB for AAP.
 
 ![ELK Architecture](elk.png)
 
@@ -52,7 +52,7 @@ Elasticsearch, Logstash, and Kibana will be installed to their respective invent
   
 ### Logstash
   1. Install JDK and Logstash
-  2. Place template to set listening address and tag Tower logs
+  2. Place template to set listening address and tag AAP logs
   3. Start service; validate Logstash is up and available
 
 
@@ -61,10 +61,10 @@ Elasticsearch, Logstash, and Kibana will be installed to their respective invent
 ## ELK Components
 
 ### Elasticsearch
-Elasticsearch is a highly scalable, centralized data storage repository. It's a NOSQL-style database with a REST API, and it can be used to store virtually anything of any filetype. I use it to store a combination of raw text, infrastructure syslogs, application messages, JSON/YAML, files (pdf, doc, xml), and diagrams (vizio, pdf, png/jpeg).
+Elasticsearch is a highly scalable, centralized data storage repository. It's a NOSQL-style database with a REST API, and it can be used to store virtually anything of any filetype. I use it to store a combination of raw text, infrastructure logs, application messages, JSON/YAML, files (pdf, doc, xml), and diagrams (vizio, pdf, png/jpeg).
 
 ### Logstash
-Logstash is a data ingestion and processing tool. It is flexible in nature, allows you to easily transform data in any way, and it allows you to send that data to a staggering array of endpoints. I setup Logstash to receive server/network syslogs and Tower job logs, and I setup filters to take those different types of data and extract them into a common data format.
+Logstash is a data ingestion and processing tool. It is flexible in nature, allows you to easily transform data in any way, and it allows you to send that data to a staggering array of endpoints. I setup Logstash to receive server/network logs and AAP job logs, and I setup filters to take those different types of data and extract them into a common data format.
 
 ### Kibana
 Kibana is the user interface that interacts directly with Elasticsearch. Kibana will display the Elasticsearch indexed data in a visual manner to help end users identify trends. You can easily build and share dashboards with other users and teams.
@@ -78,18 +78,18 @@ Kibana is the user interface that interacts directly with Elasticsearch. Kibana 
 The Logstash event processing pipeline has three stages: inputs → filters → outputs. Inputs generate events, filters modify them, and outputs ship them elsewhere. Inputs and outputs support codecs that enable you to encode or decode the data as it enters or exits the pipeline without having to use a separate filter.
 
 ### Configuration
-Our Logstash receives messages from Tower, performs aggregation and filtering, and then forwards parsed messages to Elasticsearch to be indexed. Tower's logging settings are straight-forward and support shipping messages via HTTP/HTTPS, TCP, or UDP. As you can see from the settings below, you need only to choose the logging aggregator type (Logstash) and enter the host and port of the syslog destination.
+Our Logstash receives messages from AAP, performs aggregation and filtering, and then forwards parsed messages to Elasticsearch to be indexed. AAP's logging settings are straight-forward and support shipping messages via HTTP/HTTPS, TCP, or UDP. As you can see from the settings below, you need only to choose the logging aggregator type (Logstash) and enter the host and port of the log destination.
 
 Logstash filtering is configured via plugins, through the following file:
 `/etc/logstash/conf.d/logstash.json`
 
-Here's an example configuration that will listen on port 5055, tag all messages with `tower`, and forward them to Elasticsearch over port 9200:
+Here's an example configuration that will listen on port 5055, tag all messages with `aap`, and forward them to Elasticsearch over port 9200:
 
 ```
 input {
   http {
     port => 5055
-    tags => "tower"
+    tags => "aap"
   }
 }
 
@@ -109,11 +109,11 @@ output {
 
 ### Plugins
 #### Input
-You use inputs to get data into Logstash. In the above Logstash config, I've setup an HTTP input on port 5055 to match Tower's HTTP log shipping method, and any messages it receives have a new field added: `tags: [ tower ]`. Additional inputs can be configured on other ports.
+You use inputs to get data into Logstash. In the above Logstash config, I've setup an HTTP input on port 5055 to match AAP's HTTP log shipping method, and any messages it receives have a new field added: `tags: [ aap ]`. Additional inputs can be configured on other ports.
 [See the full list of input types](https://www.elastic.co/guide/en/logstash/current/input-plugins.html).
 
 #### Filtering
-Filters are intermediary processing devices in the Logstash pipeline. You can combine filters with conditionals to perform an action on an event if it meets certain criteria. By default, Tower ships messages in a standard syslog format with the `message` field containing JSON. The above filter specifies to parse the `message` field as raw JSON.
+Filters are intermediary processing devices in the Logstash pipeline. You can combine filters with conditionals to perform an action on an event if it meets certain criteria. By default, AAP ships messages in a standard JSON format with the `message` field containing all the pertinent details. The above filter specifies to parse the `message` field as raw JSON.
 [See the full list of plugin types](https://www.elastic.co/guide/en/logstash/current/filter-plugins.html).
 
 #### Output
@@ -130,7 +130,7 @@ Though not used [yet] in our setup, codecs are basically stream filters that can
 
 ### Searching Logs
 
-After receiving and filtering Tower syslogs, Logstash forwards parsed messages to Elasticsearch where it then creates daily indexes for all logs. If you perform a basic search, it will return every individual log/message based on the timestamp at which it was received. 
+After receiving and filtering AAP logs, Logstash forwards parsed messages to Elasticsearch where it then creates daily indexes for all logs. If you perform a basic search, it will return every individual log/message based on the timestamp at which it was received. 
 
 Below is an example of an indexed fact collection message. Note that data from any/all fields can be queried independently.
 
@@ -187,7 +187,7 @@ Below is an example of an indexed fact collection message. Note that data from a
     "failed": false,
     "counter": 272,
     "message": "Job event data saved.",
-    "tags": [ "tower" ],
+    "tags": [ "aap" ],
     "@timestamp": "2017-09-12T16:57:04.382Z",
     "parent_uuid": "000d3af9-c8e6-2aaa-f2e7-0000000000dd",
     "task": "set hostname fact",
@@ -223,7 +223,7 @@ In the example log above, I'm looking for fact collection messages. In this case
           "hostname": "rhel8-lab"
 ```
 
-Also of interest would be the Tower Job ID, playbook task, and inventory hostname target. These are usually what I look for to begin validating job results.
+Also of interest would be the AAP Job ID, playbook task, and inventory hostname target. These are usually what I look for to begin validating job results.
 
 ```
 "job": 82
@@ -231,8 +231,8 @@ Also of interest would be the Tower Job ID, playbook task, and inventory hostnam
 "event_data.res.task": "set hostname fact"
 "event_data.res.task_action": "set_fact"
 
-"hostname": rhel8-lab                    # This one is from Tower job logs
-"event_data.res.hostname": rhel8-lab     # This one is from Ansible playbook results
+"hostname": rhel-lab                    # This one is from AAP job logs
+"event_data.res.hostname": rhel-lab     # This one is from Ansible playbook results
 ```
 
 
@@ -240,7 +240,7 @@ Also of interest would be the Tower Job ID, playbook task, and inventory hostnam
 
 ## Searching Facts/Logs and Beginning to Perform Remediation
 
-So you have Tower logging to ELK. Now you can search all of those logs and begin correlating data! Here's a playbook that will get you started searching. In the example below, it will:
+So you have AAP logging to ELK. Now you can search all of those logs and begin correlating data! Here's a playbook that will get you started searching. In the example below, it will:
   1. Search Ansible facts for anything with a configured wireless device
   2. Create and display a list of unique hostnames
   3. Add hostnames to inventory and run a fact collection role to discover them
