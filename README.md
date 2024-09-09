@@ -1,8 +1,8 @@
 # ELK + Ansible
 
-## Deploy an ELK stack ready to create dynamic inventories from Ansible facts and AAP job results
+## Deploy an ELK stack ready to aggregate logs, visualize data, export to CMDBs, create dynamic inventories...all from Ansible facts and AAP job results!
 
-This role will install and configure an ELK cluster to be used as a search engine and inventory CMDB for Ansible. Once Tower is configured to send logs to ELK, you'll have the ability to quickly and easily search past jobs.
+This role will install and configure an ELK cluster that will be used as a dashboard, search engine, and inventory Source of Truth for Ansible. Once AAP is configured to send logs to ELK, you'll have the ability to quickly and easily see and search past jobs.
 
 You can search logs/facts to:
   1. Validate changes
@@ -12,7 +12,7 @@ You can search logs/facts to:
   5. Identify configuration changes
   6. Automate troubleshooting and remediation
 
-Most importantly, this role is the starting point to creating a full-blown inventory CMDB for AAP.
+Most importantly, this role is the starting point to creating a full-blown inventory CMDB!
 
 ![ELK Architecture](elk.png)
 
