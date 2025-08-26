@@ -7,8 +7,8 @@
 - name: create repo for elastic packages
   ansible.builtin.yum_repository:
     name: elasticsearch
-    description: Elastic 7.x Repo
-    baseurl: https://artifacts.elastic.co/packages/7.x/yum
+    description: Elastic 8.x Repo
+    baseurl: https://artifacts.elastic.co/packages/8.x/yum
     gpgcheck: yes
 
 - name: Enable firewalld
