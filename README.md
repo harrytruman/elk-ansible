@@ -1,12 +1,12 @@
 # ELK + Ansible
 
-## Deploy an ELK stack ready to aggregate logs, visualize data, export to CMDBs, create dynamic inventories...all from Ansible facts and AAP job results!
+## Deploy an ELK stack to aggregate logs, visualize data, export to CMDBs, create dynamic inventories...all from Ansible facts and AAP job results!
 
-This role will install and configure an ELK cluster that will be used as a dashboard, search engine, and inventory Source of Truth for Ansible. Once AAP is configured to send logs to ELK, you'll have the ability to quickly and easily see and search past jobs.
+This role will install and configure an ELK cluster, which can used as a dashboard, search engine, and inventory Source of Truth for Ansible. Once AAP is configured to send logs to ELK, you'll have the ability to quickly and easily see and search past jobs and results.
 
-You can search logs/facts to:
+You can search logs and facts to:
   1. Validate changes
-  2. Verify job results
+  2. Analyze job results
   3. Build and manage inventories
   4. Perform security audits
   5. Identify configuration changes
@@ -25,9 +25,9 @@ Before running `elk.yaml`, be sure to update your inventory file to add the user
 
 Next, run the ELK install role and define a name for the ELK cluster.
 
-  2. `ansible-playbook elk.yaml -e "elk_cluster_name=elk-tower"`
+  2. `ansible-playbook elk.yaml -e "elk_cluster_name=elk-ansible"`
 
-Elasticsearch, Logstash, and Kibana will be installed to their respective inventory groups. Logstash is configured to listen on port 5055, and will tag all messages as 'tower'.
+Elasticsearch, Logstash, and Kibana will be installed to their respective inventory groups. Logstash is configured to listen on port 5055, and will tag all messages as 'aap'.
 
 
 
@@ -96,7 +96,6 @@ input {
 filter {
   json {
     source => "message"
-    remove_field => [ "headers" ]
   }
 }
 
